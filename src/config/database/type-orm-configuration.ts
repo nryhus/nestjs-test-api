@@ -6,7 +6,7 @@ export class TypeOrmConfiguration {
   static get config(): TypeOrmModuleAsyncOptions {
     return {
       imports: [PostgresqlConfigModule],
-      useFactory: (configService: PostgresqlConfigService)=> ({
+      useFactory: (configService: PostgresqlConfigService) => ({
         type: 'postgres',
         host: configService.host,
         port: configService.port,

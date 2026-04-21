@@ -1,22 +1,15 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Req,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { UserCreateDto } from './dto/user.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('User')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @UseGuards(AuthGuard())
   @Get('list')
   async getUserList() {
     return this.userService.getAllUsers();
@@ -27,23 +20,23 @@ export class UserController {
     return this.userService.createUser(body);
   }
 
-  @Post('account/:userId/animal')
-  async addAnimalToUser() {
-    return 'New animal added to user';
-  }
+  // @Post('account/:userId/animal')
+  // async addAnimalToUser() {
+  //   return 'New animal added to user';
+  // }
 
-  @Delete(':userId')
-  async deleteUserAccount() {
-    return 'User deleted';
-  }
+  // @Delete(':userId')
+  // async deleteUserAccount() {
+  //   return 'User deleted';
+  // }
 
-  @Patch(':userId')
-  async updateUserProfile() {
-    return 'User updated profile';
-  }
+  // @Patch(':userId')
+  // async updateUserProfile() {
+  //   return 'User updated profile';
+  // }
 
-  @Get(':userId')
-  async getUserProfile(@Param('userId') id: string) {
-    return this.userService.getOneUserAccount(id);
-  }
+  // @Get(':userId')
+  // async getUserProfile(@Param('userId') id: string) {
+  //   return this.userService.getOneUserAccount(id);
+  // }
 }

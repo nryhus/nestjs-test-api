@@ -6,7 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '../user/user.entity';
 
 @Injectable()
-export class BearerStrategy extends PassportStrategy(Strategy, 'bearer') {
+export class BearerStrategy extends PassportStrategy(Strategy, 'Bearer') {
   constructor(
     private readonly jwtService: JwtService,
     private readonly authService: AuthService,

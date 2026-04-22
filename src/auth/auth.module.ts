@@ -1,12 +1,10 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
 import { User } from '../user/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { BearerStrategy } from './bearer.strategy';
-import { UserService } from '../user/user.service';
-import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [

@@ -1,10 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
+  IsEmail,
+  IsInt,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
+  Matches,
 } from 'class-validator';
 
 export class UserCreateDto {
@@ -13,12 +15,12 @@ export class UserCreateDto {
   @IsNotEmpty()
   userName: string;
 
-  @ApiProperty()
-  @IsNumber()
+  @ApiProperty({ required: false })
+  @IsInt()
   @IsOptional()
   age: number;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsBoolean()
   @IsOptional()
   isActive: boolean;
@@ -26,10 +28,15 @@ export class UserCreateDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  @Matches(/^\S*(?=\S{8,})(?=\S*[A-Z])(?=\S*[\d])\S*$/, {
+    message:
+      'Password must be at least 8 characters long, include one uppercase ' +
+      'letter, one number, and contain no spaces',
+  })
   password: string;
 
   @ApiProperty()
-  @IsString()
+  @IsEmail()
   @IsNotEmpty()
   email: string;
 }

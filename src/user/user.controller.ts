@@ -1,18 +1,35 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { UserService } from './user.service';
-import { UserCreateDto } from './dto/user.dto';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
+
+import {
+  ApiPaginatedResponse,
+  PaginatedDTO,
+} from '../common/pagination/response';
+import { PublicUserInfoDto } from '../common/query/user.query.dto';
+import { UserCreateDto } from './dto/user.dto';
+import { PublicUserData } from './interface/user.interfacer';
+import { UserService } from './user.service';
 
 @ApiTags('User')
+@ApiExtraModels(PublicUserData, PaginatedDTO)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @UseGuards(AuthGuard())
+  @ApiPaginatedResponse('entities', PublicUserData)
   @Get('list')
-  async getUserList() {
-    return this.userService.getAllUsers();
+  async getUserList(@Query() query: PublicUserInfoDto) {
+    return this.userService.getAllUsers(query);
   }
 
   @Post('account/create')

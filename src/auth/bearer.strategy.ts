@@ -1,40 +1,20 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+
 import { AuthService } from './auth.service';
-import { JwtService } from '@nestjs/jwt';
-import { User } from '../user/user.entity';
+import { JWTPayload } from './interface/auth.interface';
 
 @Injectable()
 export class BearerStrategy extends PassportStrategy(Strategy, 'Bearer') {
-  constructor(
-    private readonly jwtService: JwtService,
-    private readonly authService: AuthService,
-  ) {
+  constructor(private readonly authService: AuthService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: process.env.JWT_SECRET_KEY || 'secret',
     });
   }
 
-  async validate(token: string) {
-    let user: User | null = null;
-
-    try {
-      await this.jwtService.verifyAsync(token);
-      const decodedToken = this.jwtService.decode(token);
-      user = await this.authService.validateUser(decodedToken);
-    } catch (e) {
-      console.log(
-        new Date().toISOString(),
-        ' [JWT USER VERIFY ERROR] ',
-        JSON.stringify(e),
-        ' [TOKEN] ',
-        token,
-      );
-      throw new UnauthorizedException();
-    }
-
-    return user;
+  async validate(payload: JWTPayload) {
+    return this.authService.validateUser(payload);
   }
 }

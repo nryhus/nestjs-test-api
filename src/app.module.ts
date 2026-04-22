@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserModule } from './user/user.module';
-import { AnimalModule } from './animal/animal.module';
-import { TypeOrmConfiguration } from './config/database/type-orm-configuration';
-import { AuthModule } from './auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { AnimalModule } from './animal/animal.module';
+import { AuthModule } from './auth/auth.module';
+import { TypeOrmConfiguration } from './config/database/type-orm-configuration';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [

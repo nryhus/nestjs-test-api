@@ -40,3 +40,27 @@ export class UserCreateDto {
   @IsNotEmpty()
   email: string;
 }
+
+export class UserLoginDto {
+  @ApiProperty()
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  password: string;
+}
+
+export class UserLoginSocialDto {
+  @ApiProperty()
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  accessToken: string;
+}

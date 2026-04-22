@@ -1,15 +1,23 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { OAuth2Client } from 'google-auth-library';
 import { paginateRawAndEntities } from 'nestjs-typeorm-paginate';
 import { Repository } from 'typeorm';
 
 import { AuthService } from '../auth/auth.service';
 import { PaginatedDTO } from '../common/pagination/response';
 import { PublicUserInfoDto } from '../common/query/user.query.dto';
-import { UserCreateDto } from './dto/user.dto';
+import {
+  UserCreateDto,
+  UserLoginDto,
+  UserLoginSocialDto,
+} from './dto/user.dto';
 import { PublicUserData } from './interface/user.interfacer';
 import { User } from './user.entity';
+
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
 @Injectable()
 export class UserService {
@@ -78,6 +86,50 @@ export class UserService {
     return { token };
   }
 
+  async login(data: UserLoginDto) {
+    const user = await this.userRepository.findOne({
+      where: {
+        email: data.email,
+      },
+    });
+    if (!user || !(await this.compareHash(data.password, user.password))) {
+      throw new HttpException(
+        'Email or password is incorrect',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    const token = await this.signIn(user);
+
+    return { token };
+  }
+
+  async loginSocial(data: UserLoginSocialDto) {
+    try {
+      const oAuth2Client = new OAuth2Client(
+        GOOGLE_CLIENT_ID,
+        GOOGLE_CLIENT_SECRET,
+      );
+
+      const result = await oAuth2Client.verifyIdToken({
+        idToken: data.accessToken,
+      });
+
+      const tokenPayload = result.getPayload();
+      const findUser = await this.userRepository.findOne({
+        where: { email: tokenPayload.email },
+      });
+
+      const token = await this.authService.signIn({
+        id: findUser.id.toString(),
+      });
+
+      return { token };
+    } catch (e) {
+      throw new HttpException('Google auth failed', HttpStatus.UNAUTHORIZED);
+    }
+  }
+
   // async getOneUserAccount(userId: string) {}
 
   async getHash(password: string) {
@@ -88,5 +140,9 @@ export class UserService {
     return await this.authService.signIn({
       id: user.id.toString(),
     });
+  }
+
+  async compareHash(password: string, hash: string): Promise<boolean> {
+    return bcrypt.compare(password, hash);
   }
 }

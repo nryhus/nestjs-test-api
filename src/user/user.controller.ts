@@ -15,7 +15,11 @@ import {
   PaginatedDTO,
 } from '../common/pagination/response';
 import { PublicUserInfoDto } from '../common/query/user.query.dto';
-import { UserCreateDto } from './dto/user.dto';
+import {
+  UserCreateDto,
+  UserLoginDto,
+  UserLoginSocialDto,
+} from './dto/user.dto';
 import { PublicUserData } from './interface/user.interfacer';
 import { UserService } from './user.service';
 
@@ -35,6 +39,16 @@ export class UserController {
   @Post('account/create')
   async createUserAccount(@Req() req: any, @Body() body: UserCreateDto) {
     return this.userService.createUser(body);
+  }
+
+  @Post('login')
+  async loginUser(@Body() body: UserLoginDto) {
+    return this.userService.login(body);
+  }
+
+  @Post('social/login')
+  async loginSocialUser(@Body() body: UserLoginSocialDto) {
+    return this.userService.loginSocial(body);
   }
 
   // @Post('account/:userId/animal')

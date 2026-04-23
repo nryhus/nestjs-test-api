@@ -32,4 +32,9 @@ export class PublicUserInfoDto {
   @IsString()
   @IsOptional()
   status: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  class: string;
 }

@@ -29,9 +29,9 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @UseGuards(AuthGuard())
   @ApiPaginatedResponse('entities', PublicUserData)
   @Get('list')
+  // @UseGuards(AuthGuard())
   async getUserList(@Query() query: PublicUserInfoDto) {
     return this.userService.getAllUsers(query);
   }

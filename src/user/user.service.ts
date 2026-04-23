@@ -32,7 +32,7 @@ export class UserService {
   async getAllUsers(
     query: PublicUserInfoDto,
   ): Promise<PaginatedDTO<PublicUserData>> {
-    query.sort = query.sort || 'id';
+    query.sort = query.sort || 'user.id';
     query.order = query.order || 'ASC';
 
     const options = {
@@ -42,12 +42,19 @@ export class UserService {
 
     const queryBuilder = this.userRepository
       .createQueryBuilder('user')
-      .select('id, age, email, "userName"');
+      .innerJoin('user.animals', 'ani')
+      .select(['user.id', 'user.age', 'user.email', 'user.userName']);
 
     if (query.search) {
       queryBuilder.where('"userName" IN(:...search)', {
         search: query.search.split(','),
       });
+    }
+
+    if (query.class) {
+      queryBuilder.andWhere(
+        `LOWER(ani.class) LIKE '%${query.class.toLowerCase()}%'`,
+      );
     }
 
     queryBuilder.orderBy(`${query.sort}`, query.order as 'ASC' | 'DESC');

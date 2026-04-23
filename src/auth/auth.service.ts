@@ -35,7 +35,7 @@ export class AuthService {
   async verify(token: string): Promise<JWTPayload> {
     try {
       return await this.jwtService.verifyAsync(token);
-    } catch (e) {
+    } catch {
       console.log(new Date().toISOString(), token);
       throw new UnauthorizedException();
     }

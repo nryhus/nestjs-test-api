@@ -31,7 +31,7 @@ export class UserController {
 
   @ApiPaginatedResponse('entities', PublicUserData)
   @Get('list')
-  // @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard())
   async getUserList(@Query() query: PublicUserInfoDto) {
     return this.userService.getAllUsers(query);
   }

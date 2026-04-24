@@ -21,4 +21,11 @@ export class CarService {
       this.carRepository.create({ ...data, users: [user] }),
     );
   }
+
+  async getCarWithDrivers(carId: number) {
+    return await this.carRepository.findOne({
+      where: { id: carId },
+      relations: { users: true },
+    });
+  }
 }

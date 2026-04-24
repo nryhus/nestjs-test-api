@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 
 import { Animal } from '../animal/animal.entity';
+import { Car } from '../car/car.entity';
 
 @Entity()
 export class User {
@@ -31,6 +32,6 @@ export class User {
   @OneToMany(() => Animal, (entity) => entity.user, { cascade: true })
   animals: Animal[];
 
-  @ManyToMany(() => Car, (entity) => entity.user, { cascade: true })
+  @ManyToMany(() => Car, (entity) => entity.users)
   cars: Car[];
 }

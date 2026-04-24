@@ -1,36 +1,32 @@
 import {
   Column,
   Entity,
+  JoinTable,
   ManyToMany,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { Animal } from '../animal/animal.entity';
+import { User } from '../user/user.entity';
+import { CarClassEnum } from './model/enum/car-class.enum';
 
 @Entity()
-export class User {
+export class Car {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ type: 'varchar', nullable: false })
-  userName: string;
+  producer: string;
+
+  @Column({ type: 'int', nullable: false })
+  year: number;
 
   @Column({ type: 'varchar', nullable: false })
-  email: string;
+  model: string;
 
-  @Column({ type: 'boolean', default: true })
-  isActive: boolean;
+  @Column({ enum: CarClassEnum })
+  class: CarClassEnum;
 
-  @Column({ type: 'int', nullable: true })
-  age: number;
-
-  @Column({ type: 'varchar', nullable: false })
-  password: string;
-
-  @OneToMany(() => Animal, (entity) => entity.user, { cascade: true })
-  animals: Animal[];
-
-  @ManyToMany(() => Car, (entity) => entity.user, { cascade: true })
-  cars: Car[];
+  @ManyToMany(() => User, (entity) => entity.cars)
+  @JoinTable()
+  users: User[];
 }

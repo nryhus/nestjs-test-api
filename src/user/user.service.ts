@@ -1,9 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { OAuth2Client } from 'google-auth-library';
-import { paginateRawAndEntities } from 'nestjs-typeorm-paginate';
-import { Repository } from 'typeorm';
 
 import { AuthService } from '../auth/auth.service';
 import { PaginatedDTO } from '../common/pagination/response';
@@ -15,6 +12,7 @@ import {
 } from './dto/user.dto';
 import { PublicUserData } from './interface/user.interfacer';
 import { User } from './user.entity';
+import { UserRepository } from './user.repository';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
@@ -24,52 +22,14 @@ export class UserService {
   private salt = 5;
 
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private readonly userRepository: UserRepository,
     private readonly authService: AuthService,
   ) {}
 
   async getAllUsers(
     query: PublicUserInfoDto,
   ): Promise<PaginatedDTO<PublicUserData>> {
-    query.sort = query.sort || 'user.id';
-    query.order = query.order || 'ASC';
-
-    const options = {
-      page: query.page || 1,
-      limit: query.limit || 2,
-    };
-
-    const queryBuilder = this.userRepository
-      .createQueryBuilder('user')
-      .innerJoin('user.animals', 'ani')
-      .select(['user.id', 'user.age', 'user.email', 'user.userName']);
-
-    if (query.search) {
-      queryBuilder.where('"userName" IN(:...search)', {
-        search: query.search.split(','),
-      });
-    }
-
-    if (query.class) {
-      queryBuilder.andWhere(
-        `LOWER(ani.class) LIKE '%${query.class.toLowerCase()}%'`,
-      );
-    }
-
-    queryBuilder.orderBy(`${query.sort}`, query.order as 'ASC' | 'DESC');
-
-    const [pagination, rawResults] = await paginateRawAndEntities(
-      queryBuilder,
-      options,
-    );
-
-    return {
-      page: pagination.meta.currentPage,
-      pages: pagination.meta.totalPages,
-      countItem: pagination.meta.totalItems,
-      entities: rawResults as [PublicUserData],
-    };
+    return await this.userRepository.getAllUsers(query);
   }
 
   async createUser(data: UserCreateDto) {
